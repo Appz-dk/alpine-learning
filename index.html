@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alpine-js</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Document</title>
 
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/alpinejs" defer></script>
 
   <!-- use this URL to fetch JSON from
@@ -13,47 +13,41 @@
 -->
 </head>
 <body>
+  
 
-  <!-- Counter -->
-  <!-- <div x-data="{ count: 0 }">
-    <button @click="count++">
-      increment
-    </button>
-    <button @click="count--">
-      decrement
-    </button>
-    <span x-text="count"></span>
-  </div> -->
+    <div 
+      class="all-pets" 
+      x-data="{pets: [], isLoading: true}" 
+      x-init="
+      {pets} = await (await fetch('https://learnwebcode.github.io/json-example/pets-data.json')).json(); 
+      isLoading = false;
+      "
+    >
 
-  <!-- Dropdown -->
-  <!-- Thouhts: It seems that even tho we use the x-show with false when first loading the page the 'dropdown' is visible for a split second -->
-  <!-- <div x-data="{ open: false}">
-    <button @click="open = !open">
-      Toggle
-    </button>
-    <div x-show="open" @click.outside="open = false">contens...</div>
-  </div> -->
-
-  <!-- Search input -->
-  <!-- <div
-    x-data="{
-      search: '',
-      items: ['foo', 'bar', 'baz'],
-
-      get filteredItems() {
-        return this.items.filter(
-          i => i.startsWith(this.search)
-        )
-      }
-    }"
-  >
-    <input type="text" placeholder="Search.." x-model="search" />
-    <ul>
-      <template x-for="item in filteredItems">
-        <li x-text="item"></li>
+      <template x-if="!pets.length && !isLoading">
+        <p>Whoops, you have no pets...</p>
       </template>
-    </ul>
-  </div> -->
 
-</body> 
+      <template x-for="(pet, idx) in pets">
+        <div class="pet-card" x-data="{showAge: false}">
+          <div class="pet-image">
+            <img :src="pet.photo" />
+          </div>
+          <div class="pet-text">
+            <h2 x-text="pet.name"></h2>
+            <p>Species: <span x-text="pet.species"/></p>
+            <template x-if="pet.favFoods">
+              <p>Favorite foods: <span x-html="pet.favFoods.map(f => ' ' + f)" /></p>
+            </template>
+            <button class="cool-button" @click="showAge = !showAge">Toggle Age</button>
+            <span x-show="showAge" x-transition x-text="pet.birthYear"></span>
+            <p>
+              <button class="delete-pet" @click="pets = pets.filter((_, i) => i !== idx)">Delete Pet</button>
+            </p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+</body>
 </html>
